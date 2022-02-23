@@ -64,8 +64,10 @@ CREATE TABLE Services (
 );
 
 CREATE TABLE Status (
-	active varchar(6),
-	inactive varchar(8),
+	active bit,
+	inactive bit,
+	tavern_name int,
+	service_name varchar(50)
 );
 
 CREATE TABLE ServiceSales (
