@@ -92,4 +92,16 @@ Values ('Johns Tavern', 10, 3, 5);
 INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
 Values ('Joes Tavern', 7, 3, 5);
 
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
+Values ('Boba Bubble Bois', 3, 2, 1);
+
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
+Values ('Garbage Goober', 1, 1, 10);
+
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
+Values('Garfields Cabin', 7, 1, 10);
+
+/*Test data was inserted and seeds are counting*/
+SELECT * FROM Tavern;
+
 
