@@ -1,6 +1,3 @@
-CREATE SCHEMA Schema_One;
-
-GO
 DROP TABLE IF EXISTS Users
 DROP TABLE IF EXISTS Tavern;
 DROP TABLE IF EXISTS Roles;
@@ -14,7 +11,7 @@ DROP TABLE IF EXISTS Status;
 
 CREATE TABLE Tavern (
 	tavern_ID int IDENTITY(1, 1),
-	tavern_name varchar(50),
+	tavern_name varchar(250),
 	FloorsCount int,
 	OwnerID int,
 	LocationID int
@@ -82,3 +79,17 @@ CREATE TABLE ServiceSales (
 	tavern_ID varchar(50),
 	tavern_name varchar(50),
 );
+
+/* 
+Insert Statements 
+5 Inserts into Tavern table
+*/
+
+/* 5 inserts into Tavern table */
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
+Values ('Johns Tavern', 10, 3, 5);
+
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
+Values ('Joes Tavern', 7, 3, 5);
+
+
