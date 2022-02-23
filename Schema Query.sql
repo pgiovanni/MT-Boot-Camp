@@ -36,7 +36,7 @@ CREATE TABLE BasementRats(
 
 CREATE TABLE Locations (
 	location_ID int IDENTITY(1,1),
-	locataion_name varchar(50),
+	location_name varchar(50),
 );
 
 CREATE TABLE Supplies (
@@ -62,7 +62,6 @@ CREATE TABLE Services (
 	service_name varchar(50),
 	status varchar(50),
 );
-
 
 CREATE TABLE Status (
 	active varchar(6),
@@ -104,4 +103,109 @@ Values('Garfields Cabin', 7, 1, 10);
 /*Test data was inserted and seeds are counting*/
 SELECT * FROM Tavern;
 
+/*User insert statements */
+INSERT INTO Users (user_name, roles)
+Values ('John', 
 
+INSERT INTO Users (user_name, roles)
+Values
+
+INSERT INTO Users (user_name, roles)
+Values
+
+INSERT INTO Users (user_name, roles)
+Values
+
+INSERT INTO Users (user_name, roles)
+Values
+
+SELECT * FROM Users;
+
+/*Roles insert statements*/
+INSERT INTO Roles (role_name, Description)
+Values 
+
+INSERT INTO Roles (role_name, Description)
+Values 
+
+INSERT INTO Roles (role_name, Description)
+Values 
+
+INSERT INTO Roles (role_name, Description)
+Values 
+
+INSERT INTO Roles (role_name, Description)
+Values 
+
+SELECT * FROM Roles;
+
+/*Basement Rats*/
+INSERT INTO BasementRats (rat_name)
+Values
+
+INSERT INTO BasementRats (rat_name)
+Values
+
+INSERT INTO BasementRats (rat_name)
+Values
+
+INSERT INTO BasementRats (rat_name)
+Values
+
+INSERT INTO BasementRats (rat_name)
+Values
+
+SELECT * FROM BasementRats;
+
+
+/*Locations*/
+INSERT INTO Locations (location_name)
+Values
+
+INSERT INTO Locations (location_name)
+Values
+
+INSERT INTO Locations (location_name)
+Values
+
+INSERT INTO Locations (location_name)
+Values
+
+INSERT INTO Locations (location_name)
+Values
+
+SELECT * FROM Locations;
+
+/*Supplies*/
+INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
+Values
+
+INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
+Values
+
+INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
+Values
+
+INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
+Values
+
+INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
+Values
+
+SELECT * FROM Supplies;
+
+/*SupplyDelivery*/
+INSERT INTO SupplyDelivery (supply_ID, tavern_ID, cost, amount_received, date)
+Values 
+
+/*Services*/
+INSERT INTO Services (service_name, status)
+Values ;
+
+/*Status*/
+INSERT INTO Status (active, inactive)
+Values ();
+
+/*ServiceSales*/
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
+Values ;
