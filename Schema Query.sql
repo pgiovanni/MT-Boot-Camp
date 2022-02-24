@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS ServiceSales;
 DROP TABLE IF EXISTS Status;
 
 CREATE TABLE Tavern (
-	tavern_ID int IDENTITY(1, 1),
+	ID int IDENTITY(1, 1),
 	tavern_name varchar(250),
 	FloorsCount int,
 	OwnerID int,
@@ -18,29 +18,29 @@ CREATE TABLE Tavern (
 );
 
 CREATE TABLE Users (
-	user_ID int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	user_name varchar(50),
 	roles varchar(50),
 );
 
 CREATE TABLE Roles (
-	role_ID int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	role_name varchar(50),
 	Description varchar(250),
 );
 
 CREATE TABLE BasementRats(
-	rat_ID int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	rat_name varchar(50),
 );
 
 CREATE TABLE Locations (
-	location_ID int IDENTITY(1,1),
+	 ID int IDENTITY(1,1),
 	location_name varchar(50),
 );
 
 CREATE TABLE Supplies (
-	supply_ID int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	tavern_ID int,
 	date datetime,
 	supply_name varchar(50),
@@ -49,7 +49,7 @@ CREATE TABLE Supplies (
 );
 
 CREATE TABLE SupplyDelivery (
-	devliery_ID int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	supply_ID int,
 	tavern_ID int,
 	cost money,
@@ -58,27 +58,27 @@ CREATE TABLE SupplyDelivery (
 );
 
 CREATE TABLE Services (
-	service_id int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	service_name varchar(50),
 	status varchar(50),
 );
 
 CREATE TABLE Status (
+	ID int IDENTITY(1,1),
 	active bit,
 	inactive bit,
-	tavern_name int,
-	service_name varchar(50)
+	tavern_ID int,
+	service_name varchar(50),
 );
 
 CREATE TABLE ServiceSales (
-	service_ID int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	service_name varchar(50),
 	guest varchar(50),
 	price int,
 	date_purchased datetime,
 	amount_purchased int,
 	tavern_ID varchar(50),
-	tavern_name varchar(50),
 );
 
 /* 
@@ -159,21 +159,20 @@ Values ('Luffy');
 
 SELECT * FROM BasementRats;
 
-
 /*Locations*/
-INSERT INTO Locations (location_name)
+INSERT INTO Locations
 Values ('mars');
 
-INSERT INTO Locations (location_name)
+INSERT INTO Locations
 Values ('pluto');
 
-INSERT INTO Locations (location_name)
+INSERT INTO Locations 
 Values ('New Jersey');
 
-INSERT INTO Locations (location_name)
+INSERT INTO Locations 
 Values ('Boston');
 
-INSERT INTO Locations (location_name)
+INSERT INTO Locations 
 Values ('Isengard');
 
 SELECT * FROM Locations;
@@ -233,38 +232,38 @@ Values ('bar', 'inactive');
 SELECT * FROM Services;
 
 /*Status*/
-INSERT INTO Status (active, inactive, tavern_name, service_name)
-Values (0, 1, 'Garfields Cabin', 'bar');
+INSERT INTO Status (active, inactive, tavern_ID, service_name)
+Values (0, 1, 3, 'bar');
 
-INSERT INTO Status (active, inactive, tavern_name, service_name)
-Values (1, 0, 'Garbage Goober','pool');
+INSERT INTO Status (active, inactive, tavern_ID, service_name)
+Values (1, 0, 5,'pool');
 
-INSERT INTO Status (active, inactive, tavern_name, service_name)
-Values (0, 1, 'Boba Bubble Bois', 'music');
+INSERT INTO Status (active, inactive, tavern_ID, service_name)
+Values (0, 1, 1, 'music');
 
-INSERT INTO Status (active, inactive, tavern_name, service_name)
-Values (1, 0, 'Joes Tavern', 'kitchen');
+INSERT INTO Status (active, inactive, tavern_ID, service_name)
+Values (1, 0, 2, 'kitchen');
 
-INSERT INTO Status (active, inactive, tavern_name, service_name)
-Values (1, 0, 'Johns Tavern', 'massage');
+INSERT INTO Status (active, inactive, tavern_ID, service_name)
+Values (1, 0, 4, 'massage');
 
 SELECT * FROM Status;
 
 /*ServiceSales*/
-INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
-Values ('massage', 'Bob Melendez', 25, '2022-02-02 10:25:00.000', 1, 1, 'Johns Tavern');
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
+Values ('massage', 'Bob Melendez', 25, '2022-02-02 10:25:00.000', 1, 1, 1);
 
-INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
-Values ('massage', 'Steve Jobs', 50, '2021-11-15 18:30:00.000', 2, 3, 'Boba Bubble Bois');
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
+Values ('massage', 'Steve Jobs', 50, '2021-11-15 18:30:00.000', 2, 3, 3);
 
-INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
-Values ('bar', 'Bob Marley', 200.70, '2022-11-15 18:30:00.000', 21, 4, 'Garbage Goober');
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
+Values ('bar', 'Bob Marley', 200.70, '2022-11-15 18:30:00.000', 21, 4, 4);
 
-INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
-Values ('pool', 'Elon Musk', 25, '2022-05-18 09:00:00.000', 3, 5, 'Garfields Cabin');
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
+Values ('pool', 'Elon Musk', 25, '2022-05-18 09:00:00.000', 3, 5, 5);
 
-INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
-Values ('music', 'Harry Potter', 25, '2022-06-04 16:50:00.000', 2, 2, 'Joes Tavern');
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
+Values ('music', 'Harry Potter', 25, '2022-06-04 16:50:00.000', 2, 2, 2);
 
 
 SELECT * FROM ServiceSales;
