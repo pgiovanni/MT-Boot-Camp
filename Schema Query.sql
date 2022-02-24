@@ -52,7 +52,7 @@ CREATE TABLE SupplyDelivery (
 	devliery_ID int IDENTITY(1,1),
 	supply_ID int,
 	tavern_ID int,
-	cost int,
+	cost money,
 	amount_received int,
 	date datetime,
 );
@@ -97,117 +97,174 @@ INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
 Values ('Boba Bubble Bois', 3, 2, 1);
 
 INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
-Values ('Garbage Goober', 1, 1, 10);
+Values ('Garbage Goober', 1, 1, 3);
 
 INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
-Values('Garfields Cabin', 7, 1, 10);
+Values('Garfields Cabin', 7, 1, 2);
 
 /*Test data was inserted and seeds are counting*/
 SELECT * FROM Tavern;
 
 /*User insert statements */
 INSERT INTO Users (user_name, roles)
-Values ('John', 
+Values ('John', 'Owner');
 
 INSERT INTO Users (user_name, roles)
-Values
+Values ('Joe', 'Cook');
 
 INSERT INTO Users (user_name, roles)
-Values
+Values ('Garfield', 'Owner');
 
 INSERT INTO Users (user_name, roles)
-Values
+Values ('Goku', 'Dish Washer');
 
 INSERT INTO Users (user_name, roles)
-Values
+Values ('Bob', 'Delivery Handler');
 
 SELECT * FROM Users;
 
 /*Roles insert statements*/
 INSERT INTO Roles (role_name, Description)
-Values 
+Values ('Owner', 'Owner of a tavern');
 
 INSERT INTO Roles (role_name, Description)
-Values 
+Values ('Cook', 'Taverns cook');
 
 INSERT INTO Roles (role_name, Description)
-Values 
+Values ('Delivery handler', 'In charge of shipping and receiving')
 
 INSERT INTO Roles (role_name, Description)
-Values 
+Values ('Dish Washer', 'Washes Dishes');
 
 INSERT INTO Roles (role_name, Description)
-Values 
+Values ('Bar Tender', 'Serves alcoholic beverages');
 
 SELECT * FROM Roles;
 
 /*Basement Rats*/
 INSERT INTO BasementRats (rat_name)
-Values
+Values ('Steve');
 
 INSERT INTO BasementRats (rat_name)
-Values
+Values ('Margeret');
 
 INSERT INTO BasementRats (rat_name)
-Values
+Values ('Killer');
 
 INSERT INTO BasementRats (rat_name)
-Values
+Values ('Morty');
 
 INSERT INTO BasementRats (rat_name)
-Values
+Values ('Luffy');
 
 SELECT * FROM BasementRats;
 
 
 /*Locations*/
 INSERT INTO Locations (location_name)
-Values
+Values ('mars');
 
 INSERT INTO Locations (location_name)
-Values
+Values ('pluto');
 
 INSERT INTO Locations (location_name)
-Values
+Values ('New Jersey');
 
 INSERT INTO Locations (location_name)
-Values
+Values ('Boston');
 
 INSERT INTO Locations (location_name)
-Values
+Values ('Isengard');
 
 SELECT * FROM Locations;
 
 /*Supplies*/
 INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
-Values
+Values (1, '2007-05-08 12:35:29.123', 'salt', 'pounds', 100);
 
 INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
-Values
+Values (4, '2009-05-08 12:35:29.123', 'beer', 'bottles', 500);
 
 INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
-Values
+Values (3, '2017-05-08 11:27:29.123', 'garbage bags', 'boxes', 25);
 
 INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
-Values
+Values (3, '2020-12-08 13:35:29.123', 'milk', 'cartons', 4); 
 
 INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
-Values
+Values (2, '2021-04-25 15:21:29.123', 'sugar', 'pounds', 10);
 
 SELECT * FROM Supplies;
 
 /*SupplyDelivery*/
 INSERT INTO SupplyDelivery (supply_ID, tavern_ID, cost, amount_received, date)
-Values 
+Values (2, 3, 10.25, 10, '2022-08-08 12:00:00.123');
+
+INSERT INTO SupplyDelivery (supply_ID, tavern_ID, cost, amount_received, date)
+Values (3, 4, 100.27, 30, '2022-02-24 18:41:00.123');
+
+INSERT INTO SupplyDelivery (supply_ID, tavern_ID, cost, amount_received, date)
+Values (1, 2, 200.25, 200, '2022-01-21 11:54:00.123' );
+
+INSERT INTO SupplyDelivery (supply_ID, tavern_ID, cost, amount_received, date)
+Values (4, 4, 20.00, 50, '2021-12-03 17:17:00.000');
+
+INSERT INTO SupplyDelivery (supply_ID, tavern_ID, cost, amount_received, date)
+Values (5, 5, 271.15, 50, '2022-03-30 15:36:00.000');
+
+SELECT * FROM SupplyDelivery;
 
 /*Services*/
 INSERT INTO Services (service_name, status)
-Values ;
+Values ('massage', 'active');
+
+INSERT INTO Services (service_name, status)
+Values ('pool', 'inactive');
+
+INSERT INTO Services (service_name, status)
+Values ('kitchen', 'active');
+
+INSERT INTO Services (service_name, status)
+Values ('music', 'inactive');
+
+INSERT INTO Services (service_name, status)
+Values ('bar', 'inactive');
+
+SELECT * FROM Services;
 
 /*Status*/
-INSERT INTO Status (active, inactive)
-Values ();
+INSERT INTO Status (active, inactive, tavern_name, service_name)
+Values (0, 1, 'Garfields Cabin', 'bar');
+
+INSERT INTO Status (active, inactive, tavern_name, service_name)
+Values (1, 0, 'Garbage Goober','pool');
+
+INSERT INTO Status (active, inactive, tavern_name, service_name)
+Values (0, 1, 'Boba Bubble Bois', 'music');
+
+INSERT INTO Status (active, inactive, tavern_name, service_name)
+Values (1, 0, 'Joes Tavern', 'kitchen');
+
+INSERT INTO Status (active, inactive, tavern_name, service_name)
+Values (1, 0, 'Johns Tavern', 'massage');
+
+SELECT * FROM Status;
 
 /*ServiceSales*/
 INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
-Values ;
+Values ('massage', 'Bob Melendez', 25, '2022-02-02 10:25:00.000', 1, 1, 'Johns Tavern');
+
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
+Values ('massage', 'Steve Jobs', 50, '2021-11-15 18:30:00.000', 2, 3, 'Boba Bubble Bois');
+
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
+Values ('bar', 'Bob Marley', 200.70, '2022-11-15 18:30:00.000', 21, 4, 'Garbage Goober');
+
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
+Values ('pool', 'Elon Musk', 25, '2022-05-18 09:00:00.000', 3, 5, 'Garfields Cabin');
+
+INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID, tavern_name)
+Values ('music', 'Harry Potter', 25, '2022-06-04 16:50:00.000', 2, 2, 'Joes Tavern');
+
+
+SELECT * FROM ServiceSales;
