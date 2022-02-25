@@ -1,26 +1,29 @@
-DROP TABLE IF EXISTS Users
-DROP TABLE IF EXISTS Tavern;
-DROP TABLE IF EXISTS Roles;
-DROP TABLE IF EXISTS BasementRats;
-DROP TABLE IF EXISTS Locations;
-DROP TABLE IF EXISTS Supplies;
-DROP TABLE IF EXISTS SupplyDelivery;
-DROP TABLE IF EXISTS Services;
-DROP TABLE IF EXISTS ServiceSales;
 DROP TABLE IF EXISTS Status;
-
-CREATE TABLE Tavern (
-	ID int IDENTITY(1, 1),
-	tavern_name varchar(250),
-	FloorsCount int,
-	OwnerID int,
-	LocationID int
-);
+DROP TABLE IF EXISTS ServiceSales;
+DROP TABLE IF EXISTS Services;
+DROP TABLE IF EXISTS SupplyDelivery;
+DROP TABLE IF EXISTS Supplies;
+DROP TABLE IF EXISTS Locations;
+DROP TABLE IF EXISTS Roles;
+DROP TABLE IF EXISTS Tavern;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS GuestStatus;
+DROP TABLE IF EXISTS Level;
+DROP TABLE IF EXISTS Guests;
+DROP TABLE IF EXISTS Class;
 
 CREATE TABLE Users (
-	ID int IDENTITY(1,1),
+	ID int PRIMARY KEY IDENTITY(1,1),
 	user_name varchar(50),
 	roles varchar(50),
+);
+
+CREATE TABLE Tavern (
+	ID int PRIMARY KEY IDENTITY(1, 1),
+	tavern_name varchar(250),
+	FloorsCount int,
+	OwnerID int FOREIGN KEY REFERENCES Users (ID),
+	LocationID int 
 );
 
 CREATE TABLE Roles (
@@ -35,7 +38,7 @@ CREATE TABLE BasementRats(
 );
 
 CREATE TABLE Locations (
-	 ID int IDENTITY(1,1),
+	ID int IDENTITY(1,1),
 	location_name varchar(50),
 );
 
@@ -67,7 +70,7 @@ CREATE TABLE Status (
 	ID int IDENTITY(1,1),
 	active bit,
 	inactive bit,
-	tavern_ID int,
+	tavern_ID int FOREIGN KEY REFERENCES Tavern (ID),
 	service_name varchar(50),
 );
 
@@ -81,10 +84,37 @@ CREATE TABLE ServiceSales (
 	tavern_ID varchar(50),
 );
 
-/* 
-Insert Statements 
-5 Inserts into Tavern table
-*/
+DROP TABLE IF EXISTS BasementRats;
+
+Create Table GuestStatus (
+		ID int PRIMARY KEY IDENTITY (1,1),
+		hangry bit,
+		mad bit,
+		happy bit,
+		sleeping bit,
+);
+
+CREATE TABLE Class (
+	ID int PRIMARY KEY IDENTITY(1,1),
+	mage varchar(50),
+	warrior varchar(50),
+	archer varchar(50),
+);
+
+CREATE TABLE Guests (
+	ID int PRIMARY KEY IDENTITY(1,1),
+	notes varchar(250),
+	birthday datetime,
+	cakedays datetime,
+);
+
+
+CREATE TABLE Level (
+	ID int PRIMARY KEY IDENTITY (1,1),
+	class_ID int FOREIGN KEY REFERENCES Class (ID),
+	guest_ID int FOREIGN KEY REFERENCES Guests (ID),
+	Level int,
+);
 
 /* 5 inserts into Tavern table */
 INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
@@ -231,6 +261,8 @@ Values ('bar', 'inactive');
 
 SELECT * FROM Services;
 
+GO
+
 /*Status*/
 INSERT INTO Status (active, inactive, tavern_ID, service_name)
 Values (0, 1, 3, 'bar');
@@ -251,19 +283,19 @@ SELECT * FROM Status;
 
 /*ServiceSales*/
 INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
-Values ('massage', 'Bob Melendez', 25, '2022-02-02 10:25:00.000', 1, 1, 1);
+Values ('massage', 'Bob Melendez', 25, '2022-02-02 10:25:00.000', 1, 1);
 
 INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
-Values ('massage', 'Steve Jobs', 50, '2021-11-15 18:30:00.000', 2, 3, 3);
+Values ('massage', 'Steve Jobs', 50, '2021-11-15 18:30:00.000', 2, 3);
 
 INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
-Values ('bar', 'Bob Marley', 200.70, '2022-11-15 18:30:00.000', 21, 4, 4);
+Values ('bar', 'Bob Marley', 200.70, '2022-11-15 18:30:00.000', 21, 4);
 
 INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
-Values ('pool', 'Elon Musk', 25, '2022-05-18 09:00:00.000', 3, 5, 5);
+Values ('pool', 'Elon Musk', 25, '2022-05-18 09:00:00.000', 3, 5);
 
 INSERT INTO ServiceSales (service_name, guest, price, date_purchased, amount_purchased, tavern_ID)
-Values ('music', 'Harry Potter', 25, '2022-06-04 16:50:00.000', 2, 2, 2);
+Values ('music', 'Harry Potter', 25, '2022-06-04 16:50:00.000', 2, 2);
 
 
 SELECT * FROM ServiceSales;
