@@ -18,12 +18,17 @@ CREATE TABLE Users (
 	roles varchar(50),
 );
 
+CREATE TABLE Locations (
+	ID int PRIMARY KEY IDENTITY(1,1),
+	location_name varchar(50),
+);
+
 CREATE TABLE Tavern (
 	ID int PRIMARY KEY IDENTITY(1, 1),
 	tavern_name varchar(250),
 	FloorsCount int,
 	OwnerID int FOREIGN KEY REFERENCES Users (ID),
-	LocationID int 
+	LocationID int FOREIGN KEY REFERENCES Locations (ID),
 );
 
 CREATE TABLE Roles (
@@ -37,10 +42,7 @@ CREATE TABLE BasementRats(
 	rat_name varchar(50),
 );
 
-CREATE TABLE Locations (
-	ID int IDENTITY(1,1),
-	location_name varchar(50),
-);
+
 
 CREATE TABLE Supplies (
 	ID int IDENTITY(1,1),
