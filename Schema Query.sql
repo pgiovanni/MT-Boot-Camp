@@ -3,14 +3,15 @@ DROP TABLE IF EXISTS ServiceSales;
 DROP TABLE IF EXISTS Services;
 DROP TABLE IF EXISTS SupplyDelivery;
 DROP TABLE IF EXISTS Supplies;
-DROP TABLE IF EXISTS Locations;
 DROP TABLE IF EXISTS Roles;
 DROP TABLE IF EXISTS Tavern;
+DROP TABLE IF EXISTS Locations;
 DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS GuestStatus;
 DROP TABLE IF EXISTS Level;
 DROP TABLE IF EXISTS Guests;
 DROP TABLE IF EXISTS Class;
+DROP TABLE IF EXISTS BasementRats;
 
 CREATE TABLE Users (
 	ID int PRIMARY KEY IDENTITY(1,1),
@@ -37,16 +38,16 @@ CREATE TABLE Roles (
 	Description varchar(250),
 );
 
-CREATE TABLE BasementRats(
+GO
+
+CREATE TABLE BasementRats (
 	ID int IDENTITY(1,1),
 	rat_name varchar(50),
 );
 
-
-
 CREATE TABLE Supplies (
 	ID int IDENTITY(1,1),
-	tavern_ID int,
+	tavern_ID int FOREIGN KEY REFERENCES Tavern (ID),
 	date datetime,
 	supply_name varchar(50),
 	unit varchar(25),
@@ -86,8 +87,6 @@ CREATE TABLE ServiceSales (
 	tavern_ID varchar(50),
 );
 
-DROP TABLE IF EXISTS BasementRats;
-
 Create Table GuestStatus (
 		ID int PRIMARY KEY IDENTITY (1,1),
 		hangry bit,
@@ -119,11 +118,11 @@ CREATE TABLE Level (
 );
 
 /* 5 inserts into Tavern table */
-INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
-Values ('Johns Tavern', 10, 3, 5);
+INSERT INTO Tavern (tavern_name, FloorsCount)
+Values ('Johns Tavern', 10);
 
-INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
-Values ('Joes Tavern', 7, 3, 5);
+INSERT INTO Tavern (tavern_name, FloorsCount) 
+Values ('Joes Tavern', 7);
 
 INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
 Values ('Boba Bubble Bois', 3, 2, 1);
@@ -190,6 +189,8 @@ INSERT INTO BasementRats (rat_name)
 Values ('Luffy');
 
 SELECT * FROM BasementRats;
+
+DROP TABLE IF EXISTS BasementRats;
 
 /*Locations*/
 INSERT INTO Locations
