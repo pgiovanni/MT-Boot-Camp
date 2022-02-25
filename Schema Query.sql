@@ -117,24 +117,25 @@ CREATE TABLE Level (
 	Level int,
 );
 
-/* 5 inserts into Tavern table */
-INSERT INTO Tavern (tavern_name, FloorsCount)
-Values ('Johns Tavern', 10);
 
-INSERT INTO Tavern (tavern_name, FloorsCount) 
-Values ('Joes Tavern', 7);
+/*Locations*/
 
-INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
-Values ('Boba Bubble Bois', 3, 2, 1);
+INSERT INTO Locations
+Values ('pluto');
 
-INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
-Values ('Garbage Goober', 1, 1, 3);
+INSERT INTO Locations 
+Values ('New Jersey');
 
-INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
-Values('Garfields Cabin', 7, 1, 2);
+INSERT INTO Locations 
+Values ('Boston');
 
-/*Test data was inserted and seeds are counting*/
-SELECT * FROM Tavern;
+INSERT INTO Locations 
+Values ('Isengard');
+
+INSERT INTO Locations
+Values ('mars');
+
+SELECT * FROM Locations;
 
 /*User insert statements */
 INSERT INTO Users (user_name, roles)
@@ -153,6 +154,24 @@ INSERT INTO Users (user_name, roles)
 Values ('Bob', 'Delivery Handler');
 
 SELECT * FROM Users;
+
+/* 5 inserts into Tavern table */
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
+Values ('Johns Tavern', 10, 1, 4);
+
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
+Values ('Joes Tavern', 7, 2, 5);
+
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
+Values ('Boba Bubble Bois', 3, 3, 2);
+
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID)
+Values ('Garbage Goober', 1, 3, 3);
+
+INSERT INTO Tavern (tavern_name, FloorsCount, OwnerID, LocationID) 
+Values('Garfields Cabin', 7, 4, 4);
+
+SELECT * FROM Tavern;
 
 /*Roles insert statements*/
 INSERT INTO Roles (role_name, Description)
@@ -191,24 +210,6 @@ Values ('Luffy');
 SELECT * FROM BasementRats;
 
 DROP TABLE IF EXISTS BasementRats;
-
-/*Locations*/
-INSERT INTO Locations
-Values ('mars');
-
-INSERT INTO Locations
-Values ('pluto');
-
-INSERT INTO Locations 
-Values ('New Jersey');
-
-INSERT INTO Locations 
-Values ('Boston');
-
-INSERT INTO Locations 
-Values ('Isengard');
-
-SELECT * FROM Locations;
 
 /*Supplies*/
 INSERT INTO Supplies (tavern_ID, date, supply_name, unit, count)
