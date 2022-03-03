@@ -1,47 +1,50 @@
 DROP TABLE IF EXISTS Level;
 DROP TABLE IF EXISTS SupplyDelivery;
 DROP TABLE IF EXISTS Sales;
-DROP TABLE IF EXISTS SuppliesAndServices;
+DROP TABLE IF EXISTS ServiceSupply;
 DROP TABLE IF EXISTS BasementRats;
 DROP TABLE IF EXISTS Roles;
-DROP TABLE IF EXISTS GuestStatus;
 DROP TABLE IF EXISTS Guests;
+DROP TABLE IF EXISTS GuestStatus;
 DROP TABLE IF EXISTS Class;
+DROP TABLE IF EXISTS RoomStays;
+DROP TABLE IF EXISTS RoomStatus;
+DROP TABLE IF EXISTS Room;
+DROP TABLE IF EXISTS SupplyServiceStatus;
 DROP TABLE IF EXISTS Tavern;
 DROP TABLE IF EXISTS Locations;
 DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Statuses;
 
 CREATE TABLE Class (
 	ID int IDENTITY(1,1),
-	class_name varchar(50)
+	name varchar(50)
 );
 
 CREATE TABLE Guests (
 	ID int IDENTITY(1,1),
 	notes varchar(250),
 	name varchar(50),
-	birthday datetime,
-	cakedays datetime,
+	birthday date,
+	cakedays date,
 	status_ID int,
+	class_ID int,
 );
 
 CREATE TABLE Users (
 	ID int IDENTITY(1,1),
-	user_name varchar(50),
+	name varchar(50),
 	roles varchar(50),
 );
 
 Create Table GuestStatus (
-		ID int IDENTITY (1,1),
-		status_name varchar(50),
+	ID int IDENTITY (1,1),
+	name varchar(50),
 );
 
 CREATE TABLE Locations (
 	ID int IDENTITY(1,1),
-	location_name varchar(50),
+	name varchar(50),
 );
-
 
 CREATE TABLE Roles (
 	ID int IDENTITY(1,1),
@@ -65,11 +68,11 @@ CREATE TABLE BasementRats (
 	tavern_ID varchar(50),
 );
 
-CREATE TABLE SuppliesAndServices (
+CREATE TABLE ServiceSupply (
 	ID int IDENTITY(1,1),
 	tavern_ID int,
-	date datetime,
-	ServiceOrSupply_name varchar(50),
+	date date,
+	ServiceSupply_name varchar(50),
 	unit varchar(25),
 	count int,
 	status varchar(50)
@@ -77,30 +80,29 @@ CREATE TABLE SuppliesAndServices (
 
 CREATE TABLE Sales (
 	ID int IDENTITY(1,1),
-	SupplyOrService_ID int,
+	ServiceSupply_ID int,
 	guests_ID int,
-	price int,
-	date_purchased datetime,
+	price money,
+	date_purchased date,
 	amount_purchased int,
 	tavern_ID int,
 );
 
-CREATE TABLE Statuses (
+CREATE TABLE SupplyServiceStatus (
 	ID int IDENTITY(1,1),
-	active bit,
-	inactive bit,
+	name varchar(50),
+	service_ID int,
 	tavern_ID int,
-	service_name varchar(50),
 	
 );
 
 CREATE TABLE SupplyDelivery (
 	ID int IDENTITY(1,1),
-	SupplyOrService_ID int,
+	ServiceSupply_ID int,
 	tavern_ID int,
 	cost money,
 	amount_received int,
-	date datetime,
+	date date,
 );
 
 CREATE TABLE Level (
@@ -109,12 +111,37 @@ CREATE TABLE Level (
 	Level int,
 );
 
+CREATE TABLE Room (
+	ID int IDENTITY (1,1),
+	status_ID int,
+	tavern_ID int,
+);
+
+CREATE TABLE RoomStatus (
+	ID int IDENTITY (1,1),
+	room_ID int,
+	name varchar(50),
+);
+
+GO
+
+CREATE TABLE RoomStays (
+	ID int IDENTITY(1,1),
+	sale money,
+	guest_ID int,
+	room_ID int,
+	tavern_ID int,
+	dateStart date, 
+	dateEnd date,
+	rate money,
+);
+
 INSERT INTO Locations
 Values ('pluto'), ('New Jersey'), ('Boston'), ('Isengard'), ('mars');
 
 SELECT * FROM Locations;
 
-INSERT INTO Users (user_name, roles)
+INSERT INTO Users (name, roles)
 Values ('John', 'Owner'), ('Joe', 'Cook'),('Garfield', 'Owner'), ('Goku', 'Dish Washer'), ('Bob', 'Delivery Handler');
 
 SELECT * FROM Users;
@@ -140,57 +167,76 @@ SELECT * FROM BasementRats;
 
 DROP TABLE IF EXISTS BasementRats;
 
-INSERT INTO SuppliesAndServices (tavern_ID, date, ServiceOrSupply_name, unit, count, status)
+INSERT INTO ServiceSupply (tavern_ID, date, ServiceSupply_name, unit, count, status)
 Values (1, '2007-05-08 12:35:29.123', 'salt', 'pounds', 100, 1), (4, '2009-05-08 12:35:29.123', 'beer', 'bottles', 500, 0), 
 	   (3, '2017-05-08 11:27:29.123', 'garbage bags', 'boxes', 25, 0), (3, '2020-12-08 13:35:29.123', 'milk', 'cartons', 4, 1),
 	   (2, '2021-04-25 15:21:29.123', 'sugar', 'pounds', 10, 1), (4, '2022-04-21 16:45:29.573', 'massage', 'one service', 10, 0);
 
-SELECT * FROM SuppliesAndServices;
+SELECT * FROM ServiceSupply;
 
-INSERT INTO SupplyDelivery (SupplyOrService_ID, tavern_ID, cost, amount_received, date)
+INSERT INTO SupplyDelivery (ServiceSupply_ID, tavern_ID, cost, amount_received, date)
 Values (2, 3, 10.25, 10, '2022-08-08 12:00:00.123'), (3, 4, 100.27, 30, '2022-02-24 18:41:00.123'),
 	   (1, 2, 200.25, 200, '2022-01-21 11:54:00.123' ), (4, 4, 20.00, 50, '2021-12-03 17:17:00.000'),
 	   (5, 5, 271.15, 50, '2022-03-30 15:36:00.000');
 
 SELECT * FROM SupplyDelivery;
 
-INSERT INTO Statuses (active, inactive, tavern_ID, service_name)
-Values (0, 1, 3, 'bar'), (1, 0, 5,'pool'), (0, 1, 1, 'music'), (1, 0, 2, 'kitchen'), (1, 0, 4, 'massage');
+INSERT INTO SupplyServiceStatus (name, service_ID, tavern_ID)
+Values ('active', 3, 4), ('inactive', 3, 2), ('break', 2, 3), ('closed', 4, 1), ('cleaning', 1, 5);
 
-SELECT * FROM Statuses;
+SELECT * FROM SupplyServiceStatus;
 
-INSERT INTO Sales (SupplyOrService_ID, guests_ID, price, date_purchased, amount_purchased, tavern_ID)
+INSERT INTO Sales (ServiceSupply_ID, guests_ID, price, date_purchased, amount_purchased, tavern_ID)
 Values (1, 3, 25, '2022-02-02 10:25:00.000', 1, 1), 
 	   (6, 4, 50, '2021-11-15 18:30:00.000', 2, 3),
 	   (5, 1, 200.70, '2022-11-15 18:30:00.000', 21, 4),
 	   (5, 2, 25, '2022-05-18 09:00:00.000', 3, 5),
-	   (2, 5, 25, '2022-06-04 16:50:00.000', 2, 2);
+	   (2, 5, 25, '2022-06-04 16:50:00.000', 2, 2), (3, 2, 10000, '2022-04-16', 5000, 3),
+	   (5, 4, 57.80, '2022-03-01', 50, 2),
+	   (4, 3, 2000.00, '2022-08-15', 500, 3),
+	   (3, 3, 17.80, '2021-11-09', 1, 2),
+	   (2, 4, 69.95, '2022-09-19', 3, 5),
+	   (1, 2, 79.92, '2022-10-31', 100, 3),
+	   (4, 3, 100.50, '2022-12-24', 20, 1);
 
 SELECT * FROM Sales;
 
-INSERT INTO Class (class_name) 
+INSERT INTO Class (name) 
 Values ('mage'), ('warrior'), ('archer'), ('technician'), ('worker');
 
 SELECT * FROM Class;
 
 INSERT INTO Level (class_ID, guests_ID, Level)
-Values (1, 3, 5), (3, 2, 4), (4, 4, 4), (4, 3, 4), (4, 5, 2);
+Values (1, 3, 5), (3, 2, 4), (4, 4, 4), (4, 3, 4), (4, 5, 2), (1, 3, 18), (3, 4, 35), (2, 4, 20), (4, 1, 13);
 
 SELECT * FROM Level;
 
-INSERT INTO Guests (notes, name, birthday, cakedays, status_ID)
-VALUES ('very cool', 'megu', '2022-11-17 21:00:00.000','2022-11-17 21:00:00.000', 1), 
-	   ('super nice and super strong', 'ducky', '2022-11-17 21:00:00.000', '2022-11-17 21:00:00.000', 3),
-	   ('leader of the kuzon alliance', 'shifonia', '2022-11-17 21:00:00.000', '2022-11-17 21:00:00.000', 5), 
-	   ('officer of the tremain alliance', 'bargar', '2022-11-17 21:00:00.000', '2022-11-17 21:00:00.000', 4), 
-	   ('king of gondor', 'aragorn', '2022-11-17 21:00:00.000', '2022-11-17 21:00:00.000', 5);
+INSERT INTO Guests (notes, name, birthday, cakedays, status_ID, class_ID)
+VALUES ('very cool', 'megu', '1992-11-11','2022-11-17 ', 1, 3), 
+	   ('super nice and super strong', 'ducky', '1777-11-17', '2022-11-17', 3, 5),
+	   ('leader of the kuzon alliance', 'shifonia', '2001-11-17', '2022-11-17', 5, 2), 
+	   ('officer of the tremain alliance', 'bargar', '1500-11-17', '2022-11-17 ', 4, 2), 
+	   ('king of gondor', 'aragorn', '2022-11-17', '2004-11-17', 5, 1),
+	   ('dude from guitar center', 'ducky', '1985-11-30', '1987-03-12', 5, 1);
 
 SELECT * FROM Guests;
 
-INSERT INTO GuestStatus (status_name)
+INSERT INTO GuestStatus (name)
 VALUES ('hangry'), ('happy'), ('sad'), ('frustrated'), ('thirsty');
 
 SELECT * FROM GuestStatus;
+
+INSERT INTO Room (status_ID, tavern_ID)
+VALUES (1, 3), (5, 3), (3,2), (3,3), (2,2);
+
+SELECT * FROM Room;
+
+INSERT INTO RoomStays (	sale, guest_ID, room_ID, tavern_ID, dateStart,	dateEnd, rate) 
+Values (500.00, 3, 5, 3, '2022-02-02', '2022-02-07', 100.00), 
+	   (250.00, 1, 3, 5, '2022-02-02', '2022-02-07', 50.00), 
+	   (300.00, 1, 3, 4, '2022-02-07', '2022-02-09', 150.00),
+	   (1000.00, 2, 4, 3, '2022-02-02', '2022-02-03', 1000.00),
+	   (10.00, 4, 3, 1, '2022-02-02', '2022-02-12', 1.00);
 
 ALTER TABLE Class ADD PRIMARY KEY (ID);
 ALTER TABLE Users ADD PRIMARY KEY (ID);
@@ -200,32 +246,40 @@ ALTER TABLE Roles ADD PRIMARY KEY (ID);
 
 ALTER TABLE Guests ADD PRIMARY KEY (ID);
 ALTER TABLE Guests ADD FOREIGN KEY (status_ID) REFERENCES GuestStatus (ID);
+ALTER TABLE Guests ADD FOREIGN KEY (class_ID) REFERENCES class (ID);
 
 ALTER TABLE Tavern ADD PRIMARY KEY (ID);
 ALTER TABLE Tavern ADD FOREIGN KEY (OwnerID) REFERENCES Users (ID);
 ALTER TABLE Tavern ADD FOREIGN KEY (LocationID) REFERENCES Locations (ID);
 
-ALTER TABLE SuppliesAndServices ADD PRIMARY KEY (ID);
-ALTER TABLE SuppliesAndServices ADD FOREIGN KEY (tavern_ID) REFERENCES Tavern (ID);
+ALTER TABLE ServiceSupply ADD PRIMARY KEY (ID);
+ALTER TABLE ServiceSupply ADD FOREIGN KEY (tavern_ID) REFERENCES Tavern (ID);
 
 ALTER TABLE Sales ADD PRIMARY KEY (ID);
-ALTER TABLE Sales ADD FOREIGN KEY (SupplyOrService_ID) REFERENCES SuppliesAndServices (ID);
+ALTER TABLE Sales ADD FOREIGN KEY (ServiceSupply_ID) REFERENCES ServiceSupply (ID);
 ALTER TABLE Sales ADD FOREIGN KEY (guests_ID) REFERENCES Guests (ID);
 ALTER TABLE Sales ADD FOREIGN KEY (tavern_ID) REFERENCES Tavern (ID);
 
-ALTER TABLE Statuses ADD PRIMARY KEY (ID);
-ALTER TABLE Statuses ADD FOREIGN KEY (tavern_ID) REFERENCES Tavern (ID);
+ALTER TABLE SupplyServiceStatus ADD PRIMARY KEY (ID);
+ALTER TABLE SupplyServiceStatus ADD FOREIGN KEY (tavern_ID) REFERENCES Tavern (ID);
 
 ALTER TABLE SupplyDelivery ADD PRIMARY KEY (ID);
-ALTER TABLE SupplyDelivery ADD FOREIGN KEY (SupplyOrService_ID) REFERENCES SuppliesAndServices (ID);
+ALTER TABLE SupplyDelivery ADD FOREIGN KEY (ServiceSupply_ID) REFERENCES ServiceSupply (ID);
 
 ALTER TABLE Level ADD FOREIGN KEY (class_ID) REFERENCES Class (ID);
 ALTER TABLE Level ADD FOREIGN KEY (guests_ID) REFERENCES Guests (ID);
 
+ALTER TABLE Room ADD PRIMARY KEY (ID);
+ALTER TABLE Room ADD FOREIGN KEY (tavern_ID) REFERENCES Tavern (ID);
+
+ALTER TABLE RoomStays ADD PRIMARY KEY (ID);
+ALTER TABLE RoomStays ADD FOREIGN KEY (room_ID) REFERENCES Room (ID);
+ALTER TABLE RoomStays ADD FOREIGN KEY (guest_ID) REFERENCES Guests (ID);
+ALTER TABLE RoomStays ADD FOREIGN KEY (tavern_ID) REFERENCES Tavern (ID);
 
 /*
 DROP TABLE IF EXISTS Tavern;
--Fails because it is being used by the Statuses table, SuppliesAndServices table, and the Sales table
+-Fails because it is being used by the SupplyServiceStatus table, ServiceSupply table, and the Sales table
 INSERT INTO Level (guests_ID) VALUES (56);
 -Fails because of invalid foreign key insertions
 DELETE FROM Guests WHERE name='megu';
@@ -233,3 +287,33 @@ DELETE FROM Guests WHERE name='megu';
 UPDATE Tavern SET OwnerID=6 WHERE ID=1;
 -Fails do to attempting to update a foreign id
 */
+
+
+SELECT 'SELECT * FROM Taverns WHERE tavern_name = ' + '''' + tavern_name + '''' FROM Tavern;
+--HOMEWORK 3
+SELECT * FROM Guests WHERE birthday< '2000-01-01';
+SELECT * FROM RoomStays WHERE rate > 100.00;
+SELECT DISTINCT name FROM Guests;
+SELECT * FROM Guests ORDER BY name asc;
+SELECT TOP 10 price FROM Sales;
+
+
+--7
+SELECT ID, name FROM Class
+UNION ALL
+SELECT ID, name FROM GuestStatus 
+UNION ALL
+SELECT ID, name FROM Locations
+UNION ALL
+SELECT ID, name FROM SupplyServiceStatus
+UNION ALL
+SELECT ID, name FROM RoomStatus;
+
+--8
+DROP TABLE IF EXISTS level_groupings;
+SELECT guests_ID, class_ID, level, 
+(SELECT CASE WHEN level < 11 THEN '1-10' 
+WHEN level < 21 THEN '11-20' 
+WHEN level < 41 THEN '21-40' END)
+AS level_grouping INTO level_groupings FROM Level;
+SELECT * FROM level_groupings;
