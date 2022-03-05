@@ -27,13 +27,12 @@ CREATE TABLE Guests (
 	birthday date,
 	cakedays date,
 	status_ID int,
-	class_ID int,
 );
 
 CREATE TABLE Users (
 	ID int IDENTITY(1,1),
 	name varchar(50),
-	roles varchar(50),
+	roles_ID int,
 );
 
 Create Table GuestStatus (
@@ -77,7 +76,6 @@ CREATE TABLE ServiceSupply (
 	count int,
 	status varchar(50)
 );
-
 CREATE TABLE Sales (
 	ID int IDENTITY(1,1),
 	ServiceSupply_ID int,
@@ -141,8 +139,8 @@ Values ('pluto'), ('New Jersey'), ('Boston'), ('Isengard'), ('mars');
 
 SELECT * FROM Locations;
 
-INSERT INTO Users (name, roles)
-Values ('John', 'Owner'), ('Joe', 'Cook'),('Garfield', 'Owner'), ('Goku', 'Dish Washer'), ('Bob', 'Delivery Handler');
+INSERT INTO Users (name, roles_ID)
+Values ('John', 6), ('Joe', 2),('Garfield', 5), ('Goku', 6), ('Bob', 4);
 
 SELECT * FROM Users;
 
@@ -154,7 +152,7 @@ SELECT * FROM Tavern;
 
 INSERT INTO Roles (role_name, Description)
 Values ('Owner', 'Owner of a tavern'), ('Cook', 'Taverns cook'), ('Delivery handler', 'In charge of shipping and receiving'),
-	   ('Dish Washer', 'Washes Dishes'), ('Bar Tender', 'Serves alcoholic beverages');
+	   ('Dish Washer', 'Washes Dishes'), ('Bar Tender', 'Serves alcoholic beverages'), ('admin', 'system administrator');
 
 SELECT * FROM Roles;
 
@@ -207,17 +205,17 @@ Values ('mage'), ('warrior'), ('archer'), ('technician'), ('worker');
 SELECT * FROM Class;
 
 INSERT INTO Level (class_ID, guests_ID, Level)
-Values (1, 3, 5), (3, 2, 4), (4, 4, 4), (4, 3, 4), (4, 5, 2), (1, 3, 18), (3, 4, 35), (2, 4, 20), (4, 1, 13);
+Values (1, 3, 5), (3, 2, 4), (1, 4, 4), (4, 3, 4), (4, 5, 12), (2, 3, 18), (3, 4, 35), (2, 4, 20), (4, 5, 13), (2, 1, 15);
 
 SELECT * FROM Level;
 
-INSERT INTO Guests (notes, name, birthday, cakedays, status_ID, class_ID)
-VALUES ('very cool', 'megu', '1992-11-11','2022-11-17 ', 1, 3), 
-	   ('super nice and super strong', 'ducky', '1777-11-17', '2022-11-17', 3, 5),
-	   ('leader of the kuzon alliance', 'shifonia', '2001-11-17', '2022-11-17', 5, 2), 
-	   ('officer of the tremain alliance', 'bargar', '1500-11-17', '2022-11-17 ', 4, 2), 
-	   ('king of gondor', 'aragorn', '2022-11-17', '2004-11-17', 5, 1),
-	   ('dude from guitar center', 'ducky', '1985-11-30', '1987-03-12', 5, 1);
+INSERT INTO Guests (notes, name, birthday, cakedays, status_ID)
+VALUES ('very cool', 'megu', '1992-11-11','2022-11-17 ', 1), 
+	   ('super nice and super strong', 'ducky', '1777-11-17', '2022-11-17', 3),
+	   ('leader of the kuzon alliance', 'shifonia', '2001-11-17', '2022-11-17', 5), 
+	   ('officer of the tremain alliance', 'bargar', '1500-11-17', '2022-11-17 ', 4), 
+	   ('king of gondor', 'aragorn', '2022-11-17', '2004-11-17', 5),
+	   ('dude from guitar center', 'ducky', '1985-11-30', '1987-03-12', 5);
 
 SELECT * FROM Guests;
 
@@ -231,7 +229,7 @@ VALUES (1, 3), (5, 3), (3,2), (3,3), (2,2);
 
 SELECT * FROM Room;
 
-INSERT INTO RoomStays (	sale, guest_ID, room_ID, tavern_ID, dateStart,	dateEnd, rate) 
+INSERT INTO RoomStays (sale, guest_ID, room_ID, tavern_ID, dateStart,	dateEnd, rate) 
 Values (500.00, 3, 5, 3, '2022-02-02', '2022-02-07', 100.00), 
 	   (250.00, 1, 3, 5, '2022-02-02', '2022-02-07', 50.00), 
 	   (300.00, 1, 3, 4, '2022-02-07', '2022-02-09', 150.00),
@@ -239,14 +237,15 @@ Values (500.00, 3, 5, 3, '2022-02-02', '2022-02-07', 100.00),
 	   (10.00, 4, 3, 1, '2022-02-02', '2022-02-12', 1.00);
 
 ALTER TABLE Class ADD PRIMARY KEY (ID);
-ALTER TABLE Users ADD PRIMARY KEY (ID);
-ALTER TABLE GuestStatus ADD PRIMARY KEY (ID);
-ALTER TABLE Locations ADD PRIMARY KEY (ID);
 ALTER TABLE Roles ADD PRIMARY KEY (ID);
 
+ALTER TABLE Users ADD PRIMARY KEY (ID);
+ALTER TABLE Users ADD FOREIGN KEY (roles_ID) REFERENCES Roles (ID);
+
+ALTER TABLE GuestStatus ADD PRIMARY KEY (ID);
+ALTER TABLE Locations ADD PRIMARY KEY (ID);
 ALTER TABLE Guests ADD PRIMARY KEY (ID);
 ALTER TABLE Guests ADD FOREIGN KEY (status_ID) REFERENCES GuestStatus (ID);
-ALTER TABLE Guests ADD FOREIGN KEY (class_ID) REFERENCES class (ID);
 
 ALTER TABLE Tavern ADD PRIMARY KEY (ID);
 ALTER TABLE Tavern ADD FOREIGN KEY (OwnerID) REFERENCES Users (ID);
@@ -317,3 +316,53 @@ WHEN level < 21 THEN '11-20'
 WHEN level < 41 THEN '21-40' END)
 AS level_grouping INTO level_groupings FROM Level;
 SELECT * FROM level_groupings;
+
+--1 h/w from 3/3 (h/w 4)
+SELECT name, Roles.role_name 
+FROM 
+Users JOIN Roles ON Users.roles_ID = Roles.ID WHERE roles_ID = 6;
+
+--2
+SELECT Users.name, Tavern.FloorsCount, Tavern.tavern_name, Locations.name, Roles.role_name FROM Tavern
+JOIN Users ON Tavern.OwnerID = Users.ID
+JOIN Roles ON Users.roles_ID = roles_ID 
+JOIN Locations On Tavern.LocationID = Locations.ID WHERE Users.roles_ID = 6 AND Roles.role_name = 'admin';
+
+--3
+SELECT Guests.name, Class.name, Level.Level FROM Guests
+JOIN Level ON Level.guests_ID = Guests.ID
+JOIN Class ON Level.class_ID = Class.ID ORDER BY Guests.name asc;
+
+--4
+SELECT TOP 10 Sales.price, ServiceSupply.ServiceSupply_name FROM Sales
+JOIN ServiceSupply ON Sales.ServiceSupply_ID = ServiceSupply.ID ORDER BY Sales.price desc;
+
+--5
+SELECT  Guests.name FROM Guests
+JOIN Level ON Guests.ID = Level.guests_ID 
+JOIN Class ON Level.class_ID = Class.ID 
+GROUP BY Guests.name 
+HAVING count(Guests.name) > 1
+ORDER BY Guests.name;
+
+--6
+SELECT Guests.name as Guest FROM Guests
+JOIN Level ON Guests.ID = Level.guests_ID 
+JOIN Class ON Level.class_ID = Class.ID 
+WHERE Level.level > 5
+GROUP BY Guests.name
+HAVING count(Guests.name) > 1;
+
+--7
+SELECT Guests.name as Guest, ML.HighestLevel as HighestLevel, Class.name as Class FROM Guests
+JOIN Level ON Guests.ID = Level.guests_ID
+JOIN (SELECT Level.guests_ID, max(Level.level) as HighestLevel FROM Level 
+	  GROUP BY Level.guests_ID)
+	  as ML ON ML.guests_ID = Guests.ID
+JOIN Class ON Level.class_ID = Class.ID
+GROUP BY Guests.name, Class.name, ML.HighestLevel 
+
+--8
+SELECT Guests.name, RoomStays.dateStart, RoomStays.dateEnd FROM RoomStays
+JOIN Guests on RoomStays.guest_ID = Guests.ID
+WHERE RoomStays.dateStart >= '2022-02-02' OR RoomStays.dateEnd < '2022-02-11';
