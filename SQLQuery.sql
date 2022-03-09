@@ -229,12 +229,15 @@ VALUES (1, 3), (5, 3), (3,2), (3,3), (2,2);
 
 SELECT * FROM Room;
 
-INSERT INTO RoomStays (sale, guest_ID, room_ID, tavern_ID, dateStart,	dateEnd, rate) 
+INSERT INTO RoomStays (sale, guest_ID, room_ID, tavern_ID, dateStart, dateEnd, rate) 
 Values (500.00, 3, 5, 3, '2022-02-02', '2022-02-07', 100.00), 
 	   (250.00, 1, 3, 5, '2022-02-02', '2022-02-07', 50.00), 
 	   (300.00, 1, 3, 4, '2022-02-07', '2022-02-09', 150.00),
 	   (1000.00, 2, 4, 3, '2022-02-02', '2022-02-03', 1000.00),
 	   (10.00, 4, 3, 1, '2022-02-02', '2022-02-12', 1.00);
+
+INSERT INTO RoomStatus (room_ID, name) 
+VALUES (3, 'occupied'), (2, 'vacant'), (1, 'dirty'), (3, 'clean'), (5, 'under construction');
 
 ALTER TABLE Class ADD PRIMARY KEY (ID);
 ALTER TABLE Roles ADD PRIMARY KEY (ID);
@@ -338,7 +341,7 @@ SELECT TOP 10 Sales.price, ServiceSupply.ServiceSupply_name FROM Sales
 JOIN ServiceSupply ON Sales.ServiceSupply_ID = ServiceSupply.ID ORDER BY Sales.price desc;
 
 --5
-SELECT  Guests.name FROM Guests
+SELECT Guests.name FROM Guests
 JOIN Level ON Guests.ID = Level.guests_ID 
 JOIN Class ON Level.class_ID = Class.ID 
 GROUP BY Guests.name 
@@ -365,4 +368,171 @@ GROUP BY Guests.name, Class.name, ML.HighestLevel
 --8
 SELECT Guests.name, RoomStays.dateStart, RoomStays.dateEnd FROM RoomStays
 JOIN Guests on RoomStays.guest_ID = Guests.ID
-WHERE RoomStays.dateStart >= '2022-02-02' OR RoomStays.dateEnd < '2022-02-11';
+WHERE RoomStays.dateEnd >= '2022-02-02' OR RoomStays.dateStart <= '2022-02-11';
+
+--DROP TABLE IF EXISTS Supplies;
+--Class lab 1 3/7
+IF OBJECT_ID(N'dbo.getWelcomeMsgs', N'IF') IS NOT NULL
+	DROP FUNCTION dbo.getWelcomeMsgs;
+GO
+CREATE FUNCTION dbo.getWelcomeMsgs (@tavernName int)
+RETURNS TABLE
+AS
+RETURN
+(
+SELECT
+CONCAT(
+        'Welcome, ', u.Name, '. Your tavern ', t.tavern_name, ' at ', l.name, ' is doing well. ',
+        'The last thing we sold was ', s.ServiceSupply_name, 'for $', ss.Price, '. '
+) as Q
+ FROM
+Tavern t JOIN Users u ON t.OwnerID = u.ID
+JOIN Locations l ON t.LocationID = l.ID
+JOIN (SELECT max(ID) as maxID, Tavern_ID FROM ServiceSales ss GROUP BY Tavern_ID) as sst
+        ON sst.Tavern_ID = t.ID
+JOIN ServiceSales ss ON sst.maxID = ss.ID AND ss.Tavern_ID = sst.Tavern_ID
+JOIN ServiceSupply s ON s.ID = ss.ID
+WHERE tavern_name = @tavernName
+);
+GO
+--h/w 5 and 6 3/7
+--1
+IF OBJECT_ID (N'dbo.getUsersAndRoles', N'IF') IS NOT NULL
+	DROP FUNCTION dbo.getUsersAndRoles;
+GO
+CREATE FUNCTION dbo.getUsersAndRoles (@UserId int)
+RETURNS TABLE
+AS
+RETURN
+(SELECT CONCAT('User number ', Users.ID, '''s name is ', Users.name,
+			   ' and their role is ', Roles.role_name) as Report
+FROM Users
+JOIN Roles ON Users.roles_ID = Roles.ID
+WHERE Users.ID = @UserId
+);
+GO
+
+SELECT * FROM dbo.getUsersAndRoles(1);
+
+--2
+GO
+IF OBJECT_ID(N'dbo.getClassCount', N'IF') IS NOT NULL
+	DROP FUNCTION dbo.getClassCount;
+GO
+CREATE FUNCTION dbo.getClassCount (@classID int)
+RETURNS TABLE
+AS 
+RETURN
+(
+SELECT Class.name, count(Level.class_ID) as Guest_Count FROM Guests 
+JOIN Level on Guests.ID = Level.guests_ID
+JOIN Class ON Level.class_ID = Level.class_ID AND Level.class_ID = Class.ID
+WHERE Class.ID = @classID
+GROUP BY Class.name
+);
+GO
+
+SELECT * FROM dbo.getClassCount(1); 
+
+--3
+GO
+IF OBJECT_ID(N'dbo.levelGroupings', N'IF') IS NOT NULL
+	DROP FUNCTION dbo.levelGroupings;
+GO
+CREATE FUNCTION dbo.levelGroupings (@GuestName varchar(50))
+RETURNS TABLE
+AS
+RETURN
+(
+SELECT Guests.name as Guests, Class.name, Level.level, 
+CASE 
+	WHEN Level.Level >= 1 AND Level.level <=5 THEN '1-5'
+	WHEN Level.level > 5 AND Level.level <=10 THEN '6-10'
+	WHEN Level.level > 10 AND Level.level <=20 THEN '11-20'
+	WHEN Level.level > 20 THEN 'Greater than 20'
+END as Grouping
+FROM Guests
+JOIN Level ON Guests.ID = Level.guests_ID
+JOIN Class ON Level.class_ID = Class.ID
+WHERE Guests.name = @GuestName
+ORDER BY Guests.name asc OFFSET 0 rows
+);
+GO
+
+SELECT * FROM dbo.levelGroupings('aragorn');
+
+--4
+GO
+IF OBJECT_ID(N'dbo.levelRequest', N'FN') IS NOT NULL
+	DROP FUNCTION dbo.levelRequest;
+GO
+CREATE FUNCTION dbo.levelRequest(@inputLevel int)
+RETURNS varchar(50)
+AS 
+BEGIN 
+	DECLARE @levelGrouping varchar(50);
+	SELECT @levelGrouping =
+	CASE 
+		WHEN @inputLevel >= 1 AND @inputLevel <=5 THEN '1-5'
+		WHEN @inputLevel > 5 AND @inputLevel <=10 THEN '6-10'
+		WHEN @inputLevel > 10 AND @inputLevel <=20 THEN '11-20'
+		WHEN @inputLevel > 20 THEN 'Greater than 20'
+	END
+	FROM Level
+	RETURN @levelGrouping
+END
+GO
+
+SELECT dbo.levelRequest(21);
+
+--5
+GO
+IF OBJECT_ID(N'dbo.getOpenRooms', N'IF') IS NOT NULL
+	DROP FUNCTION dbo.getOpenRooms;
+GO
+CREATE FUNCTION dbo.getOpenRooms (@date date)
+RETURNS TABLE
+AS
+RETURN 
+(
+SELECT Room.ID, Room.tavern_ID FROM Room
+JOIN RoomStays on Room.ID = RoomStays.room_ID
+WHERE @date >= RoomStays.dateStart AND @date <= RoomStays.dateEnd
+);
+GO
+SELECT * FROM dbo.getOpenRooms('2022-02-03');
+
+--6
+IF OBJECT_ID(N'dbo.getRoomsByPrice', N'IF') IS NOT NULL
+	DROP FUNCTION dbo.getRoomsByPrice;
+GO
+CREATE FUNCTION dbo.getRoomsByPrice (@priceMin money, @priceMax money)
+RETURNS TABLE
+AS
+RETURN 
+(
+SELECT Room.ID, Room.tavern_ID, RoomStays.rate FROM Room 
+JOIN RoomStays on Room.ID = RoomStays.room_ID
+WHERE RoomStays.rate >= @priceMin AND  RoomStays.rate <= @priceMax
+);
+GO
+SELECT * FROM dbo.getRoomsByPrice(100, 150);
+
+--7
+GO
+DROP PROCEDURE UnderCut;
+GO
+CREATE PROCEDURE UnderCut
+AS 
+BEGIN
+UPDATE RoomStays 
+SET RoomStays.rate = (SELECT min(rate) - .01 FROM dbo.getRoomsByPrice(50, 200))
+WHERE RoomStays.room_ID != 
+(SELECT RoomStays.room_ID  FROM RoomStays WHERE RoomStays.rate = (SELECT min(rate) FROM dbo.getRoomsByPrice(50, 200))) 
+AND RoomStays.tavern_ID != 
+(SELECT RoomStays.tavern_ID FROM RoomStays WHERE RoomStays.rate = (SELECT min(rate) FROM dbo.getRoomsByPrice(50, 200)))
+END
+
+EXEC UnderCut;
+
+SELECT * FROM RoomStays;
